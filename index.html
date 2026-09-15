@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Interaktif ATS Prakarya Kelas IX</title>
+    <!-- Google Fonts & Font Awesome Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Fredoka+One&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #4F46E5;
+            --primary-dark: #3730A3;
+            --secondary: #06B6D4;
+            --accent: #F59E0B;
+            --bg-color: #EEF2FF;
+            --card-bg: #FFFFFF;
+            --text-color: #1E293B;
+            --text-muted: #64748B;
+            --correct: #10B981;
+            --wrong: #EF4444;
+            --border: #E2E8F0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(79, 70, 229, 0.12) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(6, 182, 212, 0.12) 0px, transparent 50%);
+        }
+
+        .game-container {
+            background: var(--card-bg);
+            width: 100%;
+            max-width: 800px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            overflow: hidden;
+            border: 3px solid var(--primary);
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 24px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-family: 'Fredoka One', cursive;
+            font-size: 24px;
+            letter-spacing: 1px;
+        }
+
+        .header p {
+            font-size: 13px;
+            opacity: 0.9;
+            margin-top: 4px;
+        }
+
+        .content {
+            padding: 28px;
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        /* Form Identitas */
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 15px;
+            outline: none;
+            transition: 0.2s;
+        }
+
+        .input-group input:focus, .input-group select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+        }
+
+        .btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            width: 100%;
+            transition: transform 0.1s, background 0.2s;
+            box-shadow: 0 4px 0 #D97706;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn:hover {
+            background: #D97706;
+        }
+
+        .btn:active {
+            transform: translateY(3px);
+            box-shadow: none;
+        }
+
+        /* Tampilan Soal */
+        .progress-bar-container {
+            width: 100%;
+            background: var(--border);
+            height: 10px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--secondary), var(--primary));
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .quiz-info {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 16px;
+            color: var(--text-muted);
+        }
+
+        .question-text {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 18px;
+            line-height: 1.6;
+            white-space: pre-line;
+        }
+
+        .image-container {
+            background: #F8FAFC;
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .image-container img {
+            max-width: 100%;
+            height: auto;
+            max-height: 260px;
+            border-radius: 8px;
+            object-fit: contain;
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option-btn {
+            background: #FFFFFF;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 14px 18px;
+            text-align: left;
+            font-size: 15px;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+        }
+
+        .option-btn:hover {
+            border-color: var(--primary);
+            background: #EEF2FF;
+        }
+
+        .option-btn.selected {
+            border-color: var(--primary);
+            background-color: #E0E7FF;
+            font-weight: 600;
+        }
+
+        .navigation-btns {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 24px;
+            gap: 12px;
+        }
+
+        .btn-secondary {
+            background: #94A3B8;
+            box-shadow: 0 4px 0 #64748B;
+        }
+
+        .btn-secondary:hover {
+            background: #64748B;
+        }
+
+        /* Hasil Skor */
+        .result-card {
+            text-align: center;
+        }
+
+        .score-box {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            border-radius: 16px;
+            padding: 28px;
+            margin: 20px 0;
+        }
+
+        .score-number {
+            font-family: 'Fredoka One', cursive;
+            font-size: 60px;
+            line-height: 1;
+            margin: 10px 0;
+        }
+
+        .result-details {
+            background: #F8FAFC;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 24px;
+            text-align: left;
+        }
+
+        .result-details p {
+            margin-bottom: 8px;
+            font-size: 15px;
+        }
+
+        .sending-status {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 10px;
+            font-style: italic;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="game-container">
+    <div class="header">
+        <h1>🧵 ASESMEN TENGAH SEMESTER PRAKARYA 🎨</h1>
+        <p>SMP DHAMMĀSOKA BANJARMASIN — KELAS IX (50 SOAL)</p>
+    </div>
+
+    <div class="content">
+        <!-- 1. REGISTRASI IDENTITAS -->
+        <div id="start-screen" class="screen active">
+            <h2 style="margin-bottom: 16px; font-size: 18px;">Pendaftaran Peserta Ujian</h2>
+            <form id="identity-form" onsubmit="startGame(event)">
+                <div class="input-group">
+                    <label for="student-name">Nama Lengkap Siswa:</label>
+                    <input type="text" id="student-name" placeholder="Masukkan nama..." required>
+                </div>
+                <div class="input-group">
+                    <label for="student-class">Kelas:</label>
+                    <select id="student-class" required>
+                        <option value="">-- Pilih Kelas --</option>
+                        <option value="IX A">IX A</option>
+                        <option value="IX B">IX B</option>
+                        <option value="IX C">IX C</option>
+                        <option value="IX D">IX D</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn">🚀 MULAI KERJAKAN</button>
+            </form>
+        </div>
+
+        <!-- 2. GAMEPLAY SOAL -->
+        <div id="quiz-screen" class="screen">
+            <div class="progress-bar-container">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+            <div class="quiz-info">
+                <span id="player-info-display"></span>
+                <span id="question-count"></span>
+            </div>
+            
+            <div class="question-text" id="question-text"></div>
+            
+            <div class="image-container" id="image-container" style="display:none;">
+                <img id="question-image" src="" alt="Gambar Soal">
+            </div>
+
+            <div class="options-container" id="options-container"></div>
+
+            <div class="navigation-btns">
+                <button class="btn btn-secondary" id="prev-btn" onclick="prevQuestion()" style="display:none;">Sebelumnya</button>
+                <button class="btn" id="next-btn" onclick="nextQuestion()">Selanjutnya</button>
+            </div>
+        </div>
+
+        <!-- 3. HASIL SKOR -->
+        <div id="result-screen" class="screen">
+            <div class="result-card">
+                <h2>🎉 Ujian Selesai! 🎉</h2>
+                <p>Terima kasih telah menyelesaikan Asesmen Tengah Semester.</p>
+                
+                <div class="score-box">
+                    <div>NILAI AKHIR</div>
+                    <div class="score-number" id="final-score">0</div>
+                    <div id="score-status" style="font-weight:600;"></div>
+                </div>
+
+                <div class="result-details">
+                    <p><strong>Nama Siswa:</strong> <span id="res-name"></span></p>
+                    <p><strong>Kelas:</strong> <span id="res-class"></span></p>
+                    <p><strong>Jawaban Benar:</strong> <span id="res-correct" style="color: var(--correct); font-weight:bold;"></span></p>
+                    <p><strong>Jawaban Salah:</strong> <span id="res-wrong" style="color: var(--wrong); font-weight:bold;"></span></p>
+                    <p><strong>Total Soal:</strong> 50 Soal</p>
+                </div>
+
+                <div class="sending-status" id="sending-status"></div>
+                <br>
+                <button class="btn" onclick="restartGame()">🔄 Ulangi Game</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // MASUKKAN URL GOOGLE APPS SCRIPT WEB APP DI SINI (JIKA INGIN DISIMPAN KE GOOGLE SPREADSHEET)
+    const scriptURL = "https://script.google.com/macros/s/AKfycby9-GCBwmygZ400H4Up46jGRjgsVMk4CeCUwhVRJvA_kWGZawDgnMdUiOS_H3zn5ZHG/exec";
+
+    // BANK SOAL LENGKAP 50 NOMOR PRESISI DARI ATS PRAKARYA KELAS 9 SEMESTER 1
+    const quizData = [
+        {
+            question: "Jenis serat alam yang dijadikan sebagai bahan pakaian oleh kalangan elite Tiongkok Kuno adalah ....",
+            imageUrl: "",
+            options: ["sutra", "katun", "wol", "linen"],
+            answer: 0
+        },
+        {
+            question: "Jenis kain yang dihasilkan pada masa peradaban Mesir Kuno adalah ....",
+            imageUrl: "",
+            options: ["kain sutra", "kain katun", "kain satin", "kain wol"],
+            answer: 1
+        },
+        {
+            question: "Secara bahasa, kata tekstil berasal dari bahasa Inggris, yaitu ....",
+            imageUrl: "",
+            options: ["Swatches", "Interlining", "Textile", "cloth"],
+            answer: 2
+        },
+        {
+            question: "Kain wol berasal dari bulu hewan. Berikut bukan termasuk jenis hewan penghasil serat wol adalah ....",
+            imageUrl: "",
+            options: ["biri-biri", "domba", "kepompong", "unta"],
+            answer: 2
+        },
+        {
+            question: "Perhatikan gambar berikut!\nPernyataan yang kurang tepat mengenai kerajinan di atas adalah ....",
+            imageUrl: "https://uploads.onecompiler.io/4537kx6u3/1789433022222/Gemini_Generated_Image_uls21luls21luls2.jpg", // Gambar Ecoprint (Soal No. 5)
+            options: [
+                "kerajinan tersebut dilakukan secara manual",
+                "motif kerajinan terlihat lebih natural",
+                "motif kerajinan dibuat menggunakan bahan alami",
+                "pengerjaan kerajinan tersebut memerlukan alat cetak mesin"
+            ],
+            answer: 3
+        },
+        {
+            question: "Bahan pembuatan ecoprint yang digunakan untuk proses fiksasi adalah ....",
+            imageUrl: "",
+            options: ["larutan air dan garam", "air mineral", "air mendidih", "air tawas"],
+            answer: 3
+        },
+        {
+            question: "Perhatikan gambar berikut!\nGambar di atas menunjukkan salah satu teknik menyulam, yaitu tusuk ....",
+            imageUrl: "https://uploads.onecompiler.io/4537kx6u3/1789433111328/Gemini_Generated_Image_w33667w33667w336.jpg", // Gambar Tusuk Jelujur (Soal No. 7)
+            options: ["Kembang", "Tangkai", "Jelujur", "silang"],
+            answer: 2
+        },
+        {
+            question: "Seorang perajin membuat motif dengan cara mengikat karet atau menjahit secara jelujur dan melintangkan kain. Teknik tersebut dinamakan .....",
+            imageUrl: "",
+            options: ["kanuko shibori", "umo shibori", "arashi shibori", "miura shibori"],
+            answer: 0
+        },
+        {
+            question: "Ujung benang lainnya yang terhubung dengan gulungan benang disebut ....",
+            imageUrl: "",
+            options: ["front loop", "back loop", "yard end", "yard ball"],
+            answer: 2
+        },
+        {
+            question: "Perbedaan antara bordir dan sulam dapat dilihat dari aspek ....",
+            imageUrl: "",
+            options: ["cara mengerjakannya", "benang yang digunakan", "bahan yang digunakan", "tujuan pembuatannya"],
+            answer: 0
+        },
+        {
+            question: "Langkah selanjutnya setelah membuat desain pola pada kain yang akan dibordir adalah ....",
+            imageUrl: "",
+            options: ["memosisikan pemidangan", "membordir sesuai pola", "memasang kain pada pemidangan", "melipat kain di bawah tempat jarum"],
+            answer: 2
+        },
+        {
+            question: "Kerajinan tapestri menggunakan benang lungsin yang disusun secara ....",
+            imageUrl: "",
+            options: ["sejajar dan bergerak", "bersilangan dan tidak bergerak", "sejajar dan tidak bergerak", "mengisi bagian ruang kosong"],
+            answer: 2
+        },
+        {
+            question: "Jenis simpul untuk fondasi makrame adalah simpul ....",
+            imageUrl: "",
+            options: ["ganda", "dasar", "lilit", "tambah"],
+            answer: 1
+        },
+        {
+            question: "Berikut bukan termasuk upaya sebuah kerajinan yang berkelanjutan adalah ....",
+            imageUrl: "",
+            options: [
+                "menggunakan berbagai bahan kimia berbahaya",
+                "menggunakan pewarna alami",
+                "menghasilkan limbah yang dapat diolah kembali",
+                "menggunakan bahan alami sebagai bahan utama"
+            ],
+            answer: 0
+        },
+        {
+            question: "Perhatikan gambar berikut!\nCiri khas batik di atas adalah ....",
+            imageUrl: "https://uploads.onecompiler.io/4537kx6u3/1789433185634/Gemini_Generated_Image_fyiz39fyiz39fyiz.jpg", // Gambar Batik Vorstenlanden/Cokelat (Soal No. 15)
+            options: [
+                "kain yang digunakan berwarna gelap, seperti hitam dan cokelat",
+                "hanya menggunakan warna biru yang diambil dari tanaman indigo",
+                "dibuat menggunakan teknik spiral sebelum dicelup dalam pewarna",
+                "pola batik yang renggang, namun beraturan dan berukuran kecil"
+            ],
+            answer: 0
+        },
+        {
+            question: "Serat kapas merupakan bahan tekstil alami yang berasal dari tanaman ....",
+            imageUrl: "",
+            options: ["flaks", "eceng gondok", "rami", "kapas"],
+            answer: 3
+        },
+        {
+            question: "Serat rayon merupakan selulosa tumbuhan yang diolah menggunakan bahan kimia. Hal tersebut menunjukkan bahwa serat ini merupakan bahan ....",
+            imageUrl: "",
+            options: ["Alami", "sintetis murni", "mineral", "semisintetis"],
+            answer: 3
+        },
+        {
+            question: "Berikut yang termasuk kelebihan kain wol adalah ....",
+            imageUrl: "",
+            options: ["terasa dingin saat digunakan", "mampu menahan panas tubuh", "mudah kusut dan kaku", "tidak mudah menyerap air"],
+            answer: 1
+        },
+        {
+            question: "Serat eceng gondok memiliki kelebihan ....",
+            imageUrl: "",
+            options: ["teksturnya yang empuk", "seratnya yang kaku dan kuat", "seratnya yang kuat dan lentur", "bentuknya yang tipis dan panjang"],
+            answer: 2
+        },
+        {
+            question: "Teknik ecoprint memanfaatkan bahan alam berupa ....",
+            imageUrl: "",
+            options: ["Benang", "Jarum", "Tanaman", "malam"],
+            answer: 2
+        },
+        {
+            question: "Serat sutra dihasilkan dari ....",
+            imageUrl: "",
+            options: ["Telur", "Ulat", "kupu-kupu", "kepompong"],
+            answer: 3
+        },
+        {
+            question: "Peralatan yang digunakan untuk memintal serat menjadi benang disebut ....",
+            imageUrl: "",
+            options: ["alat tenun", "canting", "pemintal", "gawangan"],
+            answer: 2
+        },
+        {
+            question: "Sarah adalah perajin tekstil yang mengolah kain dengan memberikan motif dan pewarnaan pada permukaannya. Teknik yang digunakan Sarah disebut ....",
+            imageUrl: "",
+            options: ["Membatik", "Menenun", "Membordir", "menyulam"],
+            answer: 0
+        },
+        {
+            question: "Kain dari air limbah tahu dibuat dengan bantuan bakteri dan ampas tahu. Jenis bakteri yang digunakan adalah ....",
+            imageUrl: "",
+            options: ["bakteri Lactobacillus", "bakteri Acetobacter xylinum", "bakteri Streptococcus", "bakteri Bifidobacterium"],
+            answer: 1
+        },
+        {
+            question: "Salah satu teknik shibori adalah mengikat karet pada kain dengan kuat secara jelujur dan melintang pada kain. Teknik tersebut akan menghasilkan ....",
+            imageUrl: "",
+            options: ["motif yang presisi", "motif seperti bunga", "motif seperti bola", "motif seperti pola air"],
+            answer: 1
+        },
+        {
+            question: "Teknik shibori untuk menghias kain berasal dari ....",
+            imageUrl: "",
+            options: ["Indonesia", "Tiongkok", "Jepang", "Thailand"],
+            answer: 2
+        },
+        {
+            question: "Langkah pertama yang perlu dilakukan ketika membatik adalah ....",
+            imageUrl: "",
+            options: [
+                "mengangin-anginkan kain batik",
+                "menggosok kain agar cairan lilinnya hilang",
+                "menggambar motif pada kain menggunakan cairan lilin",
+                "merebus kain bermotif"
+            ],
+            answer: 2
+        },
+        {
+            question: "Kain yang dapat dihias menggunakan teknik ikat celup sangat beragam, misalnya kain katun dan sutra. Kelebihan dari kedua jenis kain tersebut untuk teknik ikat celup adalah ....",
+            imageUrl: "",
+            options: ["memiliki daya serap tinggi", "memiliki model yang bervariasi", "memiliki tekstur yang beragam", "mudah dibentuk"],
+            answer: 0
+        },
+        {
+            question: "Bordir otomatis adalah cara membordir dengan menggunakan mesin sebagai alat bantu dalam pengerjaannya. Berikut bukan termasuk keuntungan dari teknik ini adalah ....",
+            imageUrl: "",
+            options: ["hasil produksi lebih rapi", "hasil produksi lebih banyak", "harganya lebih mahal", "proses produksi lebih cepat"],
+            answer: 2
+        },
+        {
+            question: "Berikut bukan termasuk teknik pengolahan benang dengan cara menenun adalah ....",
+            imageUrl: "",
+            options: ["rajut", "bordir", "tapestri", "makrame"],
+            answer: 1
+        },
+        {
+            question: "Dalam pembuatan tenun, benang yang diletakkan secara vertikal pada alat tenun disebut benang ....",
+            imageUrl: "",
+            options: ["Pakan", "Urat", "Lungsi", "Luar"],
+            answer: 2
+        },
+        {
+            question: "Sebuah kain batik yang memiliki motif tertentu dan hanya digunakan oleh keluarga kerajaan memiliki fungsi kerajinan tekstil sebagai ....",
+            imageUrl: "",
+            options: ["Penghias", "benda pakai", "simbolik", "benda ritual"],
+            answer: 2
+        },
+        {
+            question: "Fungsi pembuatan tekstil tradisional Indonesia adalah ....",
+            imageUrl: "",
+            options: ["mendorong komoditas ekspor", "membuat pakaian yang mahal", "memudahkan pembuatan desain", "melestarikan kain tradisional"],
+            answer: 3
+        },
+        {
+            question: "Langkah pertama yang dilakukan perajin dalam mengatur strategi pemasaran adalah ....",
+            imageUrl: "",
+            options: [
+                "melakukan analisis data hasil riset",
+                "menyusun budgeting",
+                "melakukan riset untuk menentukan target segmen.",
+                "mengevaluasi efektivitas promosi"
+            ],
+            answer: 2
+        },
+        {
+            question: "Perhatikan gambar berikut!\nPernyataan yang sesuai dengan pembuatan karya seperti pada gambar adalah ....",
+            imageUrl: "https://uploads.onecompiler.io/4537kx6u3/1789433266010/Gemini_Generated_Image_nq4bpnnq4bpnnq4b.jpg", // Gambar Membatik Canting (Soal No. 35)
+            options: [
+                "kain dibatik menggunakan canting dan malam",
+                "kain dilukis menggunakan canting dan cat air",
+                "kain dibatik menggunakan stempel",
+                "kain dilukis menggunakan kuas dan cat akrilik"
+            ],
+            answer: 0
+        },
+        {
+            question: "Miniatur bangunan adalah karya yang dibuat dengan ukuran lebih kecil dari bangunan sebenarnya dengan tujuan untuk ....",
+            imageUrl: "",
+            options: [
+                "menggantikan fungsi bangunan asli",
+                "memperlihatkan bentuk atau rancangan suatu bangunan",
+                "memperkuat struktur bangunan asli",
+                "mengurangi biaya pembangunan Gedung"
+            ],
+            answer: 1
+        },
+        {
+            question: "Salah satu bahan yang sering digunakan untuk membuat miniatur bangunan adalah ....",
+            imageUrl: "",
+            options: ["kertas karton", "air", "minyak goreng", "pasir basah"],
+            answer: 0
+        },
+        {
+            question: "Sebelum membuat miniatur bangunan, langkah yang sebaiknya dilakukan adalah ....",
+            imageUrl: "",
+            options: [
+                "langsung mengecat bahan",
+                "membuat rancangan atau sketsa",
+                "membongkar bahan yang tersedia",
+                "menjual hasil karya"
+            ],
+            answer: 1
+        },
+        {
+            question: "Alat yang tepat untuk memotong karton agar menghasilkan potongan yang rapi adalah ....",
+            imageUrl: "",
+            options: ["Penggaris", "Kuas", "Cutter", "Palet"],
+            answer: 2
+        },
+        {
+            question: "Hal yang paling penting diperhatikan saat membuat miniatur bangunan adalah ....",
+            imageUrl: "",
+            options: [
+                "kesesuaian ukuran dan proporsi",
+                "banyaknya warna yang digunakan",
+                "harga bahan yang mahal",
+                "ukuran alat yang digunakan"
+            ],
+            answer: 0
+        },
+        {
+            question: "Teknik tie-dye merupakan teknik menghias kain dengan cara ....",
+            imageUrl: "",
+            options: [
+                "membakar permukaan kain",
+                "mengikat dan mencelup kain menggunakan pewarna",
+                "menyulam kain menggunakan benang",
+                "melukis kain menggunakan pensil"
+            ],
+            answer: 1
+        },
+        {
+            question: "Tujuan kain diikat sebelum proses pewarnaan pada teknik tie-dye adalah ....",
+            imageUrl: "",
+            options: [
+                "agar kain menjadi lebih tebal",
+                "mencegah bagian tertentu terkena pewarna",
+                "mempercepat proses pengeringan",
+                "membuat kain menjadi lebih berat"
+            ],
+            answer: 1
+        },
+        {
+            question: "Bahan utama yang digunakan dalam pembuatan karya tie-dye adalah ....",
+            imageUrl: "",
+            options: ["Kain", "Kayu", "tanah liat", "kaca"],
+            answer: 0
+        },
+        {
+            question: "Setelah proses pewarnaan tie-dye selesai, kain sebaiknya ....",
+            imageUrl: "",
+            options: [
+                "langsung dipotong",
+                "dikeringkan dan kemudian ikatannya dilepas",
+                "dibakar agar warnanya tahan lama",
+                "direndam dalam minyak"
+            ],
+            answer: 1
+        },
+        {
+            question: "Keunikan motif tie-dye terletak pada ....",
+            imageUrl: "",
+            options: [
+                "motif yang selalu sama",
+                "pola warna yang dihasilkan dari teknik ikat dan pewarnaan",
+                "penggunaan kain yang harus berwarna hitam",
+                "bentuk kain yang harus berbentuk persegi"
+            ],
+            answer: 1
+        },
+        {
+            question: "Kerajinan adalah karya yang dibuat dengan keterampilan tangan dan memiliki nilai guna atau keindahan. Tujuan pembuatan karya kerajinan dalam kehidupan sehari-hari Adalah….",
+            imageUrl: "",
+            options: [
+                "hanya untuk memenuhi tugas sekolah",
+                "menghasilkan benda yang berguna dan memiliki nilai estetis",
+                "membuat benda yang sulit digunakan",
+                "menghabiskan bahan yang tersedia"
+            ],
+            answer: 1
+        },
+        {
+            question: "Teknik ikat celup (tie-dye) adalah teknik membuat motif pada kain dengan cara …",
+            imageUrl: "",
+            options: [
+                "melukis kain menggunakan pensil",
+                "memotong kain menjadi berbagai bentuk",
+                "mengikat atau melipat bagian kain kemudian mencelupkannya ke dalam pewarna",
+                "menjahit kain menggunakan mesin jahit"
+            ],
+            answer: 2
+        },
+        {
+            question: "Berikut ini yang termasuk alat dan bahan yang dapat digunakan untuk membuat kain dengan teknik ikat celup adalah …",
+            imageUrl: "",
+            options: [
+                "kain putih, pewarna tekstil, karet/tali, wadah, dan sarung tangan",
+                "kayu, paku, palu, dan cat minyak",
+                "tanah liat, cetakan, dan oven",
+                "kertas, pensil, penghapus, dan penggaris"
+            ],
+            answer: 0
+        },
+        {
+            question: "Urutan langkah yang tepat dalam membuat kain dengan teknik ikat celup adalah …",
+            imageUrl: "",
+            options: [
+                "mewarnai – mengikat – menjemur – menyiapkan kain",
+                "mengikat – menjemur – mewarnai – menyiapkan kain",
+                "menyiapkan kain – mengikat/melipat – memberi warna – membuka ikatan dan mengeringkan",
+                "menjemur – memberi warna – mengikat – mencuci kain"
+            ],
+            answer: 2
+        },
+        {
+            question: "Kain tie-dye dapat memiliki nilai jual karena …",
+            imageUrl: "",
+            options: [
+                "semua kain tie-dye memiliki motif yang sama",
+                "motif dan perpaduan warnanya unik serta memiliki nilai keindahan",
+                "pembuatannya tidak membutuhkan keterampilan",
+                "kain tie-dye hanya dapat digunakan sebagai pajangan"
+            ],
+            answer: 1
+        }
+    ];
+
+    let currentQuestion = 0;
+    let userAnswers = new Array(quizData.length).fill(null);
+    let studentData = { name: "", class: "" };
+
+    function startGame(e) {
+        e.preventDefault();
+        studentData.name = document.getElementById('student-name').value;
+        studentData.class = document.getElementById('student-class').value;
+
+        document.getElementById('start-screen').classList.remove('active');
+        document.getElementById('quiz-screen').classList.add('active');
+
+        document.getElementById('player-info-display').innerText = `${studentData.name} (${studentData.class})`;
+        loadQuestion();
+    }
+
+    function loadQuestion() {
+        const data = quizData[currentQuestion];
+        
+        const progressPercentage = ((currentQuestion + 1) / quizData.length) * 100;
+        document.getElementById('progress-bar').style.width = `${progressPercentage}%`;
+        document.getElementById('question-count').innerText = `Soal ${currentQuestion + 1} dari ${quizData.length}`;
+
+        document.getElementById('question-text').innerText = `${currentQuestion + 1}. ${data.question}`;
+
+        const imgContainer = document.getElementById('image-container');
+        const imgElement = document.getElementById('question-image');
+        
+        if (data.imageUrl && data.imageUrl.trim() !== "") {
+            imgElement.src = data.imageUrl;
+            imgContainer.style.display = 'block';
+        } else {
+            imgContainer.style.display = 'none';
+            imgElement.src = "";
+        }
+
+        const optionsContainer = document.getElementById('options-container');
+        optionsContainer.innerHTML = '';
+
+        const labels = ['A', 'B', 'C', 'D'];
+        data.options.forEach((opt, idx) => {
+            const btn = document.createElement('div');
+            btn.className = `option-btn ${userAnswers[currentQuestion] === idx ? 'selected' : ''}`;
+            btn.onclick = () => selectOption(idx);
+            btn.innerHTML = `<strong>${labels[idx]}.</strong>&nbsp; ${opt}`;
+            optionsContainer.appendChild(btn);
+        });
+
+        document.getElementById('prev-btn').style.display = currentQuestion > 0 ? 'block' : 'none';
+        if (currentQuestion === quizData.length - 1) {
+            document.getElementById('next-btn').innerText = "Selesai & Lihat Nilai";
+        } else {
+            document.getElementById('next-btn').innerText = "Selanjutnya";
+        }
+    }
+
+    function selectOption(index) {
+        userAnswers[currentQuestion] = index;
+        const buttons = document.querySelectorAll('.option-btn');
+        buttons.forEach((btn, idx) => {
+            btn.classList.toggle('selected', idx === index);
+        });
+    }
+
+    function prevQuestion() {
+        if (currentQuestion > 0) {
+            currentQuestion--;
+            loadQuestion();
+        }
+    }
+
+    function nextQuestion() {
+        if (userAnswers[currentQuestion] === null) {
+            alert("Harap pilih salah satu jawaban sebelum melanjutkan!");
+            return;
+        }
+
+        if (currentQuestion < quizData.length - 1) {
+            currentQuestion++;
+            loadQuestion();
+        } else {
+            showResult();
+        }
+    }
+
+    function showResult() {
+        document.getElementById('quiz-screen').classList.remove('active');
+        document.getElementById('result-screen').classList.add('active');
+
+        let correctCount = 0;
+        quizData.forEach((q, idx) => {
+            if (userAnswers[idx] === q.answer) {
+                correctCount++;
+            }
+        });
+
+        const wrongCount = quizData.length - correctCount;
+        const score = Math.round((correctCount / quizData.length) * 100);
+
+        document.getElementById('res-name').innerText = studentData.name;
+        document.getElementById('res-class').innerText = studentData.class;
+        document.getElementById('res-correct').innerText = `${correctCount} Soal`;
+        document.getElementById('res-wrong').innerText = `${wrongCount} Soal`;
+        document.getElementById('final-score').innerText = score;
+
+        const statusElem = document.getElementById('score-status');
+        if (score >= 80) {
+            statusElem.innerText = "PRESTASI SANGAT BAIK! 🌟";
+        } else if (score >= 70) {
+            statusElem.innerText = "MEMENUHI KKM 👍";
+        } else {
+            statusElem.innerText = "PERLU BELAJAR LAGI 📚";
+        }
+
+        if (scriptURL && scriptURL.trim() !== "") {
+            const statusText = document.getElementById('sending-status');
+            statusText.innerText = "Mengirim nilai ke Google Spreadsheet...";
+
+            const payload = {
+                name: studentData.name,
+                class: studentData.class,
+                correct: correctCount,
+                wrong: wrongCount,
+                score: score
+            };
+
+            fetch(scriptURL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(() => {
+                statusText.innerText = "✅ Hasil berhasil tersimpan di Spreadsheet!";
+                statusText.style.color = "var(--correct)";
+            })
+            .catch(error => {
+                console.error("Gagal mengirim data:", error);
+                statusText.innerText = "⚠️ Gagal terhubung ke Spreadsheet (Nilai tetap tersimpan di layar).";
+                statusText.style.color = "var(--wrong)";
+            });
+        }
+    }
+
+    function restartGame() {
+        currentQuestion = 0;
+        userAnswers = new Array(quizData.length).fill(null);
+        document.getElementById('result-screen').classList.remove('active');
+        document.getElementById('start-screen').classList.add('active');
+        document.getElementById('identity-form').reset();
+    }
+</script>
+</body>
+</html>
